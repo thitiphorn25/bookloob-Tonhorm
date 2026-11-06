@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4eee5">
+  <meta name="description" content="BookLoop — ส่งต่อเรื่องราวผ่านหนังสือมือสอง ซื้อ ขาย และส่งต่อหนังสือให้กลับมามีคุณค่าอีกครั้ง">
+  <title>BookLoop — Pass the Story On</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Noto+Serif+Thai:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="announcement">A good story deserves another reader. <span>ส่งต่อหนังสือ ส่งต่อเรื่องราว ♡</span></div>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="BookLoop home">
+      <img src="bookloop-logo.png" alt="BookLoop — Pass the Story On">
+    </a>
+    <nav class="main-nav" id="mainNav">
+      <a href="#books">หนังสือทั้งหมด</a>
+      <a href="#how">วิธีใช้งาน</a>
+      <a href="#about">เกี่ยวกับเรา</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-button" id="searchToggle" aria-label="ค้นหาหนังสือ" title="ค้นหาหนังสือ">⌕</button>
+      <button class="outline-button" id="loginOpen">เข้าสู่ระบบ</button>
+      <div class="account-menu-wrap hidden" id="accountMenuWrap">
+  <button class="account-avatar-button" id="accountOpen"
+          aria-label="เปิดเมนูบัญชี" title="บัญชีของฉัน">
+    <span id="accountInitial">♡</span>
+  </button>
+
+  <div class="account-dropdown hidden" id="accountDropdown">
+    <div class="dropdown-profile">
+      <div class="dropdown-avatar" id="dropdownInitial">♡</div>
+      <div>
+        <strong id="dropdownName">สมาชิก BookLoop</strong>
+        <p id="dropdownEmail"></p>
+      </div>
+    </div>
+
+    <button type="button" id="openMyAccount">My Account</button>
+    <button type="button" id="dropdownSignOut">ออกจากระบบ</button>
+  </div>
+</div>
+      <button class="primary-button small" id="postOpen">ลงประกาศ +</button>
+      <button class="mobile-menu" id="mobileMenu" aria-label="เปิดเมนู">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">BOOKS · PEOPLE · BRIGHTER DAYS</p>
+        <h1>Every book<br>has a <em>next</em><br>chapter.</h1>
+        <p class="hero-lead">หนังสือเล่มเดิม อาจเป็นเรื่องราวบทใหม่<br>ของใครอีกคนก็ได้</p>
+        <div class="hero-buttons">
+          
+        </div>
+        <div class="hero-note"><span class="note-mark">♡</span><span>READ · SHARE · REPEAT<br><small>Pass the story on.</small></span></div>
+      </div>
+      <div class="hero-art">
+        <img class="hero-photo" src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1500&q=85" alt="กองหนังสือบนโต๊ะอ่านหนังสือ">
+        
+        <div class="hero-caption">A little loop<br>of lovely stories.</div>
+      </div>
+    </section>
+
+    <section class="intro-strip" id="about">
+      <p class="eyebrow">WELCOME TO BOOKLOOP</p>
+      <h2>อ่านจบแล้ว อย่าเพิ่งวางเรื่องราวไว้บนชั้น</h2>
+      <p>BookLoop พื้นที่กลางสำหรับซื้อ ขาย และส่งต่อหนังสือมือสอง<br class="desktop-only"> ให้หนังสือที่ยังมีคุณค่ากลับไปอยู่ในมือของคนที่อยากอ่าน</p>
+      <div class="intro-ornament">♡ &nbsp; ONE BOOK, MANY STORIES &nbsp; ♡</div>
+    </section>
+
+    <section class="books-section section-wrap" id="books">
+      <div class="section-heading">
+        <div><p class="eyebrow">THE BOOKSHELF</p><h2>Find your next <em>read.</em></h2><p class="section-sub">ค้นพบหนังสือมือสองที่กำลังรอเจ้าของคนใหม่</p></div>
+        <button class="text-button" id="refreshBooks">รีเฟรชรายการ ↗</button>
+      </div>
+      <div class="search-panel" id="searchPanel">
+        <label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="ค้นหาชื่อหนังสือ ผู้เขียน หรือ ISBN..."></label>
+        <select id="categoryFilter" aria-label="หมวดหมู่">
+          <option value="">ทุกหมวดหมู่</option>
+          <option>นิยาย</option><option>พัฒนาตนเอง</option><option>ธุรกิจ</option><option>การศึกษา</option><option>จิตวิทยา</option><option>วรรณกรรม</option><option>อื่น ๆ</option>
+        </select>
+        <select id="typeFilter" aria-label="ประเภทประกาศ">
+          <option value="">ทุกประเภท</option><option value="ขาย">ขาย</option><option value="ส่งต่อฟรี">ส่งต่อฟรี</option>
+        </select>
+      </div>
+      <div class="results-line"><span id="resultCount">กำลังโหลดรายการ...</span><span></span></div>
+      <div class="book-grid" id="bookGrid">
+        <div class="loading-state">กำลังเปิดชั้นหนังสือของเรา...</div>
+      </div>
+      <div class="empty-state hidden" id="emptyState"><div>♡</div><h3>ยังไม่พบหนังสือที่ค้นหา</h3><p>ลองเปลี่ยนคำค้นหา หรือกลับมาดูใหม่อีกครั้งนะ</p></div>
+    </section>
+
+    
+<!-- SELLER STATISTICS -->
+<section class="seller-stats-section hidden" id="sellerStatsSection">
+
+  <div class="section-heading">
+    <p class="eyebrow">YOUR BOOKLOOP ACTIVITY</p>
+    <h2>Your selling <em>summary.</em></h2>
+    <p>สรุปข้อมูลหนังสือและการขายของคุณ</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span>หนังสือทั้งหมด</span>
+      <strong id="statTotal">0</strong>
+      <small>เล่ม</small>
+    </div>
+
+    <div class="stat-card">
+      <span>กำลังประกาศขาย</span>
+      <strong id="statAvailable">0</strong>
+      <small>เล่ม</small>
+    </div>
+
+    <div class="stat-card">
+      <span>ขาย/ส่งต่อสำเร็จ</span>
+      <strong id="statCompleted">0</strong>
+      <small>เล่ม</small>
+    </div>
+
+    <div class="stat-card">
+      <span>ยอดขายรวม</span>
+      <strong id="statRevenue">฿0</strong>
+      <small>บาท</small>
+    </div>
+  </div>
+
+  <div class="seller-history">
+    <h3>ประวัติหนังสือที่ขาย/ส่งต่อสำเร็จ</h3>
+    <div id="sellerHistoryList">
+      <p>ยังไม่มีประวัติการขาย</p>
+    </div>
+  </div>
+
+</section>
+<!-- END SELLER STATISTICS -->
+
+
+<!-- MY ACCOUNT PAGE -->
+<section class="account-section hidden" id="accountSection">
+
+  <div class="account-page-header">
+    <button class="outline-button" id="backToShop">
+      ← กลับไปหน้าร้านค้า
+    </button>
+    <p class="eyebrow">YOUR PERSONAL SPACE</p>
+    <h2>My <em>Account.</em></h2>
+    <p>จัดการข้อมูลและความน่าเชื่อถือของคุณบน BookLoop</p>
+  </div>
+
+  <div class="account-page-layout">
+
+    <aside class="account-sidebar">
+      <div class="account-profile-summary">
+        <div class="account-avatar" id="accountProfileInitial">♡</div>
+        <h3 id="accountDisplayName">สมาชิก BookLoop</h3>
+        <p id="accountEmail">อีเมลสมาชิก</p>
+      </div>
+
+      <button class="account-tab active" data-account-tab="profile">
+        ข้อมูลโปรไฟล์
+      </button>
+      
+    </aside>
+
+    <div class="account-main">
+
+      <div class="account-panel" id="accountProfilePanel">
+        <p class="eyebrow">PERSONAL INFORMATION</p>
+        <h3>ข้อมูลโปรไฟล์</h3>
+
+        <label for="accountName">ชื่อ-นามสกุล</label>
+        <input id="accountName" type="text" placeholder="กรอกชื่อ-นามสกุล">
+
+        <label for="accountPhone">เบอร์โทรศัพท์</label>
+        <input id="accountPhone" type="tel" placeholder="กรอกเบอร์โทรศัพท์">
+
+        <label>อีเมล</label>
+        <input id="accountEmailField" type="email" disabled>
+
+        <button class="primary-button" id="saveAccountName">
+          บันทึกข้อมูล
+        </button>
+      </div>
+
+      
+
+      
+
+      <p id="accountMessage"></p>
+    </div>
+  </div>
+</section>
+<!-- END MY ACCOUNT PAGE -->
+
+
+    <section class="how-section" id="how">
+      <div class="how-image"><img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1200&q=85" alt="ชั้นหนังสือในห้องสมุด"></div>
+      <div class="how-copy"><p class="eyebrow light">HOW BOOKLOOP WORKS</p><h2>Pass it on.<br><em>Keep it going.</em></h2>
+        <div class="step"><span>01</span><div><b>ลงประกาศหนังสือ</b><p>เพิ่มรูป รายละเอียด สภาพ และราคาหรือเลือกส่งต่อฟรี</p></div></div>
+        <div class="step"><span>02</span><div><b>ค้นหาเรื่องราวที่ใช่</b><p>เลือกดูหนังสือและอ่านรายละเอียดก่อนติดต่อผู้ประกาศ</p></div></div>
+        <div class="step"><span>03</span><div><b>ตกลงและส่งมอบ</b><p>ติดต่อกันโดยตรง เพื่อตกลงราคาและวิธีรับหนังสือ</p></div></div>
+      </div>
+    </section>
+
+    <section class="closing-banner">
+      <p class="eyebrow">YOUR BOOK'S NEXT CHAPTER STARTS HERE</p>
+      <h2>Done reading?<br><em>Pass it on.</em></h2>
+      <button class="cream-button" id="closingPost">ลงประกาศหนังสือของคุณ ↗</button>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-brand">
+  <img src="bookloop-logo.png" alt="BookLoop">
+  <p>ส่งต่อหนังสือ ส่งต่อเรื่องราว</p>
+</div>
+    <div class="footer-links"><a href="#books">หนังสือ</a><a href="#how">วิธีใช้งาน</a><a href="#about">เกี่ยวกับ BookLoop</a></div>
+    <p class="copyright">© 2026 BookLoop. Pass the story on. · สนับสนุนการใช้ทรัพยากรอย่างคุ้มค่า</p>
+  </footer>
+
+  <!-- Authentication modal -->
+  <!-- Authentication modal -->
+<div class="modal-backdrop hidden" id="authModal">
+  <section class="modal auth-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="authTitle">
+
+    <button class="modal-close"
+      data-close="authModal"
+      aria-label="ปิด">×</button>
+
+    <p class="eyebrow">BOOKLOOP ACCOUNT</p>
+    <h2 id="authTitle">Welcome <em>back.</em></h2>
+    <p class="auth-description">
+      เข้าสู่ระบบเพื่อซื้อ ขาย และส่งต่อหนังสือเล่มโปรด
+    </p>
+
+    <div class="tabs">
+      <button type="button" class="tab active"
+        data-auth-tab="login">เข้าสู่ระบบ</button>
+      <button type="button" class="tab"
+        data-auth-tab="signup">สมัครสมาชิก</button>
+    </div>
+
+    <form id="authForm">
+
+      <label id="nameField" class="form-field hidden">
+        ชื่อที่แสดง
+        <input id="authName"
+          type="text"
+          autocomplete="name"
+          placeholder="กรอกชื่อของคุณ">
+      </label>
+
+      <label class="form-field">
+        อีเมล
+        <input id="authEmail"
+          type="email"
+          required
+          autocomplete="email"
+          placeholder="you@example.com">
+      </label>
+
+      <label class="form-field">
+        รหัสผ่าน
+        <div class="password-wrapper">
+          <input id="authPassword"
+            type="password"
+            required
+            minlength="6"
+            autocomplete="current-password"
+            placeholder="อย่างน้อย 6 ตัวอักษร">
+          <button type="button"
+            class="password-toggle"
+            id="togglePassword"
+            aria-label="แสดงรหัสผ่าน">👁</button>
+        </div>
+        <small id="passwordHint"></small>
+      </label>
+
+      <button type="button"
+        id="forgotPasswordLink"
+        class="forgot-password-link">
+        ลืมรหัสผ่าน?
+      </button>
+
+      <label id="confirmPasswordField" class="form-field hidden">
+        ยืนยันรหัสผ่าน
+        <input id="authPasswordConfirm"
+          type="password"
+          minlength="6"
+          autocomplete="new-password"
+          placeholder="กรอกรหัสผ่านอีกครั้ง">
+      </label>
+
+      <button class="primary-button full"
+        id="authSubmit"
+        type="submit">เข้าสู่ระบบ</button>
+
+      <p class="form-message" id="authMessage"></p>
+    </form>
+
+    <p class="fine-print">
+      การสมัครสมาชิกหมายถึงคุณยอมรับเงื่อนไขการใช้งาน BookLoop
+    </p>
+
+  </section>
+</div>
+
+  
+  <!-- Reset Password Modal -->
+  <div class="modal-backdrop hidden" id="resetPasswordModal">
+    <section class="modal auth-modal" role="dialog" aria-modal="true">
+      <button class="modal-close" data-close="resetPasswordModal">×</button>
+
+      <p class="eyebrow">BOOKLOOP ACCOUNT</p>
+      <h2>Reset your <em>password.</em></h2>
+
+      <form id="resetPasswordForm">
+        <label class="form-field">
+          รหัสผ่านใหม่
+          <input id="newPassword" type="password"
+            required minlength="6"
+            placeholder="อย่างน้อย 6 ตัวอักษร">
+        </label>
+
+        <label class="form-field">
+          ยืนยันรหัสผ่านใหม่
+          <input id="confirmNewPassword" type="password"
+            required minlength="6"
+            placeholder="กรอกรหัสผ่านอีกครั้ง">
+        </label>
+
+        <p class="form-message" id="resetPasswordMessage"></p>
+
+        <button class="primary-button full" type="submit">
+          บันทึกรหัสผ่านใหม่
+        </button>
+      </form>
+    </section>
+  </div>
+
+
+  <!-- Create/edit listing modal -->
+  <div class="modal-backdrop hidden" id="listingModal">
+    <section class="modal listing-modal" role="dialog" aria-modal="true" aria-labelledby="listingTitle">
+      <button class="modal-close" data-close="listingModal" aria-label="ปิด">×</button>
+      <p class="eyebrow">GIVE YOUR BOOK A NEW HOME</p><h2 id="listingTitle">ส่งต่อเรื่องราว <em>ของคุณ</em></h2>
+      <p class="modal-intro">กรอกข้อมูลหนังสือให้ครบถ้วน หนังสือทุกเล่มควรเป็นหนังสือที่มีอยู่จริง</p>
+      <form id="listingForm">
+        <input type="hidden" id="listingId">
+        <div class="form-grid">
+          <label class="form-field span-2">ชื่อหนังสือ *<div class="inline-lookup"><input id="bookTitle" required placeholder="เช่น Atomic Habits"><button type="button" class="lookup-button" id="lookupBook">ค้นหาหนังสือจริง</button></div></label>
+          <label class="form-field">ผู้เขียน *<input id="bookAuthor" required placeholder="ชื่อผู้เขียน"></label>
+          <label class="form-field">ISBN (ถ้ามี)<input id="bookIsbn" placeholder="ISBN-13 หรือ ISBN-10"></label>
+          <label class="form-field">หมวดหมู่ *<select id="bookCategory" required><option value="">เลือกหมวดหมู่</option><option>นิยาย</option><option>พัฒนาตนเอง</option><option>ธุรกิจ</option><option>การศึกษา</option><option>จิตวิทยา</option><option>วรรณกรรม</option><option>อื่น ๆ</option></select></label>
+          <label class="form-field">สภาพหนังสือ *<select id="bookCondition" required><option value="">เลือกสภาพ</option><option>ใหม่ / เหมือนใหม่</option><option>ดีมาก</option><option>ดี</option><option>มีร่องรอยการใช้งาน</option></select></label>
+          <label class="form-field">ประเภทประกาศ *<select id="listingType" required><option value="ขาย">ขาย</option><option value="ส่งต่อฟรี">ส่งต่อฟรี</option></select></label>
+          <label class="form-field" id="priceField">ราคา (บาท) *<input id="bookPrice" type="number" min="1" step="1" placeholder="เช่น 120"></label>
+          <label class="form-field span-2">รายละเอียดเพิ่มเติม<textarea id="bookDescription" rows="3" placeholder="เล่าเกี่ยวกับหนังสือ ตำหนิ หรือรายละเอียดการรับหนังสือ..."></textarea></label>
+          
+<div class="ai-assistant span-2">
+  <div class="ai-heading">
+    <span class="ai-icon">✦</span>
+    <div>
+      <b>BookLoop AI Assistant</b>
+      <small>ผู้ช่วยอัจฉริยะสำหรับการลงประกาศหนังสือ</small>
+    </div>
+  </div>
+  <p>ให้ AI ช่วยแนะนำหมวดหมู่และเขียนคำบรรยายหนังสือให้น่าอ่าน</p>
+  <button type="button" class="primary-button" id="aiGenerate">
+    ✦ ให้ AI ช่วยเขียนคำบรรยาย
+  </button>
+  <div id="aiResult" class="ai-result hidden">
+    <div id="aiCategory"></div>
+    <label class="form-field">
+      คำบรรยายที่ AI แนะนำ
+      <textarea id="aiDescription" rows="4" readonly></textarea>
+    </label>
+    <button type="button" class="outline-button" id="aiApply">
+      ใช้คำบรรยายนี้
+    </button>
+  </div>
+  <p id="aiMessage" class="form-message"></p>
+</div>
+
+          <label class="form-field span-2">รูปหนังสือ *<input id="bookImage" type="file" accept="image/*"><small>แนะนำรูปปกหนังสือจริง ไฟล์ JPG, PNG หรือ WEBP ขนาดไม่เกิน 5 MB</small><div id="currentImage" class="current-image"></div></label>
+          <label class="form-field">ชื่อผู้ติดต่อ *<input id="sellerName" required placeholder="ชื่อที่ใช้ติดต่อ"></label>
+          <label class="form-field">เบอร์โทรศัพท์<input id="sellerPhone" type="tel" placeholder="08x-xxx-xxxx"></label>
+          <label class="form-field span-2">LINE ID (ถ้าต้องการ)<input id="sellerLine" placeholder="LINE ID สำหรับติดต่อ"></label>
+        </div>
+        <p class="form-message" id="listingMessage"></p>
+        <button class="primary-button full" type="submit" id="listingSubmit">เผยแพร่ประกาศ </button>
+      </form>
+    </section>
+  </div>
+
+  <!-- Book detail modal -->
+  <div class="modal-backdrop hidden" id="detailModal">
+    <section class="modal detail-modal" role="dialog" aria-modal="true">
+      <button class="modal-close" data-close="detailModal" aria-label="ปิด">×</button>
+      <div id="detailContent"></div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="script.js"></script>
+</body>
+</html>
